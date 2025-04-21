@@ -21,7 +21,7 @@ class CodeGenerator:
         print("=" * 50)
 
     def generate_with_constraint(self, prompt: str, constraint: str) -> str:
-        full_prompt = f"Write Python code following this constraint: {constraint}. Task: {prompt}"
+        full_prompt = f"Write Python code following this constraint: {constraint} if possible else state not possible. Task: {prompt}"
         response = self.client.chat.completions.create(
             model="gpt-3.5-turbo",
             messages=[
