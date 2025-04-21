@@ -78,9 +78,9 @@ def test_with_constraint():
     problem = dataset['test'][0]
     
     constraints = [
-        "Use while loops instead of for loops",
-        "Use for loops instead of while loops",
-        "Use recursion instead of loops"
+        "Use while loop(s) instead of for loop(s)",
+        "Use for loop(s) instead of while loop(s)",
+        "Use recursion instead of loop(s)"
     ]
     
     generator = CodeGenerator()
@@ -104,7 +104,7 @@ def test_with_constraint_and_import():
     problem = dataset['test'][0]
     
     constraints = [
-        "Use while loops instead of for loops",
+        "Use while loop(s) instead of for loop(s)",
         "Use for loops instead of while loops",
         "Use recursion instead of loops"
     ]
