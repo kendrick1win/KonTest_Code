@@ -6,6 +6,7 @@ import re
 
 class CodeGenerator:
     def __init__(self):
+         # Initializes the CodeGenerator with OpenAI API key.
         load_dotenv(dotenv_path='.env.local')
         self.client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
 
@@ -18,7 +19,7 @@ class CodeGenerator:
         print(problem['canonical_solution'])
         print("\nTEST CASES:")
         print(problem['test'])
-        print("=" * 50)
+        print("=" * 50) # prints seperator.
 
     def generate_with_constraint(self, prompt: str, constraint: str) -> str:
         full_prompt = f"Write Python code following this constraint: {constraint} if possible else state not possible. Task: {prompt}"
@@ -61,6 +62,7 @@ def extract_code(generated_code: str) -> str:
     return code.strip()
 
 def run_test(generated_code: str, test_code: str) -> bool:
+    # Run test using HumanEval
     try:
         namespace = {}
         exec(extract_code(generated_code), namespace)
@@ -74,6 +76,7 @@ def run_test(generated_code: str, test_code: str) -> bool:
 
 
 def test_with_constraint():
+    # Test with contraints and without explicitly stating add imports.
     dataset = load_dataset("openai_humaneval")
     problem = dataset['test'][0]
     
@@ -84,6 +87,7 @@ def test_with_constraint():
     ]
     
     generator = CodeGenerator()
+    # Print the problem first before testing
     generator.print_problem_details(problem)
     
     for constraint in constraints:
@@ -100,6 +104,8 @@ def test_with_constraint():
             break
 
 def test_with_constraint_and_import():
+     # Test with contraints and with explicitly stating add imports.
+
     dataset = load_dataset("openai_humaneval")
     problem = dataset['test'][0]
     
@@ -110,6 +116,8 @@ def test_with_constraint_and_import():
     ]
     
     generator = CodeGenerator()
+
+    # Print the problem first before testing
     generator.print_problem_details(problem)
     
     for constraint in constraints:
