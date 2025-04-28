@@ -1,0 +1,1571 @@
+
+
+Testing Problem 1
+
+=== PROBLEM DETAILS ===
+Task ID: HumanEval/0
+
+PROMPT:
+from typing import List
+
+
+def has_close_elements(numbers: List[float], threshold: float) -> bool:
+    """ Check if in given list of numbers, are any two numbers closer to each other than
+    given threshold.
+    >>> has_close_elements([1.0, 2.0, 3.0], 0.5)
+    False
+    >>> has_close_elements([1.0, 2.8, 3.0, 4.0, 5.0, 2.0], 0.3)
+    True
+    """
+
+
+CANONICAL SOLUTION:
+    for idx, elem in enumerate(numbers):
+        for idx2, elem2 in enumerate(numbers):
+            if idx != idx2:
+                distance = abs(elem - elem2)
+                if distance < threshold:
+                    return True
+
+    return False
+
+
+TEST CASES:
+
+
+METADATA = {
+    'author': 'jt',
+    'dataset': 'test'
+}
+
+
+def check(candidate):
+    assert candidate([1.0, 2.0, 3.9, 4.0, 5.0, 2.2], 0.3) == True
+    assert candidate([1.0, 2.0, 3.9, 4.0, 5.0, 2.2], 0.05) == False
+    assert candidate([1.0, 2.0, 5.9, 4.0, 5.0], 0.95) == True
+    assert candidate([1.0, 2.0, 5.9, 4.0, 5.0], 0.8) == False
+    assert candidate([1.0, 2.0, 3.0, 4.0, 5.0, 2.0], 0.1) == True
+    assert candidate([1.1, 2.2, 3.1, 4.1, 5.1], 1.0) == True
+    assert candidate([1.1, 2.2, 3.1, 4.1, 5.1], 0.5) == False
+
+
+==================================================
+
+Testing constraint with imports: Use while loop(s) instead of for loop(s)
+
+Generated Code:
+from typing import List
+
+def has_close_elements(numbers: List[float], threshold: float) -> bool:
+    if len(numbers) < 2:
+        return False
+    i = 0
+    while i < len(numbers) - 1:
+        j = i + 1
+        while j < len(numbers):
+            if abs(numbers[i] - numbers[j]) <= threshold:
+                return True
+            j += 1
+        i += 1
+    return False
+from typing import List
+
+def has_close_elements(numbers: List[float], threshold: float) -> bool:
+    if len(numbers) < 2:
+        return False
+    i = 0
+    while i < len(numbers) - 1:
+        j = i + 1
+        while j < len(numbers):
+            if abs(numbers[i] - numbers[j]) <= threshold:
+                return True
+            j += 1
+        i += 1
+    return False
+✅ Tests passed!
+
+--- Current Results ---
+Total tests run: 1
+
+Use while loop(s) instead of for loop(s):
+Passed: 1 | Failed: 0 | API Errors: 0
+Current Success Rate: 100.00%
+
+Use for loops instead of while loops:
+Passed: 0 | Failed: 0 | API Errors: 0
+Current Success Rate: 0.00%
+
+Use recursion instead of loops:
+Passed: 0 | Failed: 0 | API Errors: 0
+Current Success Rate: 0.00%
+==================================================
+
+Testing constraint with imports: Use for loops instead of while loops
+
+Generated Code:
+from typing import List
+
+def has_close_elements(numbers: List[float], threshold: float) -> bool:
+    for i in range(len(numbers)):
+        for j in range(i + 1, len(numbers)):
+            if abs(numbers[i] - numbers[j]) < threshold:
+                return True
+    return False
+✅ Tests passed!
+
+--- Current Results ---
+Total tests run: 2
+
+Use while loop(s) instead of for loop(s):
+Passed: 1 | Failed: 0 | API Errors: 0
+Current Success Rate: 100.00%
+
+Use for loops instead of while loops:
+Passed: 1 | Failed: 0 | API Errors: 0
+Current Success Rate: 100.00%
+
+Use recursion instead of loops:
+Passed: 0 | Failed: 0 | API Errors: 0
+Current Success Rate: 0.00%
+==================================================
+
+Testing constraint with imports: Use recursion instead of loops
+
+Generated Code:
+from typing import List
+
+def has_close_elements(numbers: List[float], threshold: float) -> bool:
+    def recursive_check(numbers: List[float], threshold: float) -> bool:
+        if len(numbers) <= 1:
+            return False
+        if abs(numbers[0] - numbers[1]) <= threshold:
+            return True
+        return recursive_check(numbers[1:], threshold)
+    return recursive_check(numbers, threshold)
+✅ Tests passed!
+
+--- Current Results ---
+Total tests run: 3
+
+Use while loop(s) instead of for loop(s):
+Passed: 1 | Failed: 0 | API Errors: 0
+Current Success Rate: 100.00%
+
+Use for loops instead of while loops:
+Passed: 1 | Failed: 0 | API Errors: 0
+Current Success Rate: 100.00%
+
+Use recursion instead of loops:
+Passed: 1 | Failed: 0 | API Errors: 0
+Current Success Rate: 100.00%
+==================================================
+
+
+Testing Problem 2
+
+=== PROBLEM DETAILS ===
+Task ID: HumanEval/1
+
+PROMPT:
+from typing import List
+
+
+def separate_paren_groups(paren_string: str) -> List[str]:
+    """ Input to this function is a string containing multiple groups of nested parentheses. Your goal is to
+    separate those group into separate strings and return the list of those.
+    Separate groups are balanced (each open brace is properly closed) and not nested within each other
+    Ignore any spaces in the input string.
+    >>> separate_paren_groups('( ) (( )) (( )( ))')
+    ['()', '(())', '(()())']
+    """
+
+
+CANONICAL SOLUTION:
+    result = []
+    current_string = []
+    current_depth = 0
+
+    for c in paren_string:
+        if c == '(':
+            current_depth += 1
+            current_string.append(c)
+        elif c == ')':
+            current_depth -= 1
+            current_string.append(c)
+
+            if current_depth == 0:
+                result.append(''.join(current_string))
+                current_string.clear()
+
+    return result
+
+
+TEST CASES:
+
+
+METADATA = {
+    'author': 'jt',
+    'dataset': 'test'
+}
+
+
+def check(candidate):
+    assert candidate('(()()) ((())) () ((())()())') == [
+        '(()())', '((()))', '()', '((())()())'
+    ]
+    assert candidate('() (()) ((())) (((())))') == [
+        '()', '(())', '((()))', '(((())))'
+    ]
+    assert candidate('(()(())((())))') == [
+        '(()(())((())))'
+    ]
+    assert candidate('( ) (( )) (( )( ))') == ['()', '(())', '(()())']
+
+==================================================
+
+Testing constraint with imports: Use while loop(s) instead of for loop(s)
+
+Generated Code:
+from typing import List
+
+def separate_paren_groups(paren_string: str) -> List[str]:
+    paren_string = paren_string.replace(" ", "")
+    result = []
+    current_group = ""
+    open_count = 0
+    i = 0
+    while i < len(paren_string):
+        if paren_string[i] == "(":
+            open_count += 1
+            current_group += paren_string[i]
+        elif paren_string[i] == ")":
+            open_count -= 1
+            current_group += paren_string[i]
+        if open_count == 0:
+            result.append(current_group)
+            current_group = ""
+        i += 1
+    return result
+✅ Tests passed!
+
+--- Current Results ---
+Total tests run: 4
+
+Use while loop(s) instead of for loop(s):
+Passed: 2 | Failed: 0 | API Errors: 0
+Current Success Rate: 100.00%
+
+Use for loops instead of while loops:
+Passed: 1 | Failed: 0 | API Errors: 0
+Current Success Rate: 100.00%
+
+Use recursion instead of loops:
+Passed: 1 | Failed: 0 | API Errors: 0
+Current Success Rate: 100.00%
+==================================================
+
+Testing constraint with imports: Use for loops instead of while loops
+
+Generated Code:
+from typing import List
+
+def separate_paren_groups(paren_string: str) -> List[str]:
+    paren_string = paren_string.replace(" ", "")
+    result = []
+    current_group = ""
+    open_count = 0
+
+    for char in paren_string:
+        current_group += char
+        if char == "(":
+            open_count += 1
+        elif char == ")":
+            open_count -= 1
+        if open_count == 0:
+            result.append(current_group)
+            current_group = ""
+
+    return result
+✅ Tests passed!
+
+--- Current Results ---
+Total tests run: 5
+
+Use while loop(s) instead of for loop(s):
+Passed: 2 | Failed: 0 | API Errors: 0
+Current Success Rate: 100.00%
+
+Use for loops instead of while loops:
+Passed: 2 | Failed: 0 | API Errors: 0
+Current Success Rate: 100.00%
+
+Use recursion instead of loops:
+Passed: 1 | Failed: 0 | API Errors: 0
+Current Success Rate: 100.00%
+==================================================
+
+Testing constraint with imports: Use recursion instead of loops
+
+Generated Code:
+import re
+from typing import List
+
+def separate_paren_groups(paren_string: str) -> List[str]:
+    paren_string = re.sub(' ', '', paren_string)
+    def recursive_separate(parens: str, groups: List[str], current_group: str) -> List[str]:
+        if not parens:
+            if current_group:
+                groups.append(current_group)
+            return groups
+        if parens[0] == '(':
+            current_group += '('
+            return recursive_separate(parens[1:], groups, current_group)
+        else:
+            current_group += ')'
+            if current_group.count('(') == current_group.count(')'):
+                groups.append(current_group)
+                return recursive_separate(parens[1:], groups, '')
+            else:
+                return recursive_separate(parens[1:], groups, current_group)
+
+    return recursive_separate(paren_string, [], '')
+```
+✅ Tests passed!
+
+--- Current Results ---
+Total tests run: 6
+
+Use while loop(s) instead of for loop(s):
+Passed: 2 | Failed: 0 | API Errors: 0
+Current Success Rate: 100.00%
+
+Use for loops instead of while loops:
+Passed: 2 | Failed: 0 | API Errors: 0
+Current Success Rate: 100.00%
+
+Use recursion instead of loops:
+Passed: 2 | Failed: 0 | API Errors: 0
+Current Success Rate: 100.00%
+==================================================
+
+
+Testing Problem 3
+
+=== PROBLEM DETAILS ===
+Task ID: HumanEval/2
+
+PROMPT:
+
+
+def truncate_number(number: float) -> float:
+    """ Given a positive floating point number, it can be decomposed into
+    and integer part (largest integer smaller than given number) and decimals
+    (leftover part always smaller than 1).
+
+    Return the decimal part of the number.
+    >>> truncate_number(3.5)
+    0.5
+    """
+
+
+CANONICAL SOLUTION:
+    return number % 1.0
+
+
+TEST CASES:
+
+
+METADATA = {
+    'author': 'jt',
+    'dataset': 'test'
+}
+
+
+def check(candidate):
+    assert candidate(3.5) == 0.5
+    assert abs(candidate(1.33) - 0.33) < 1e-6
+    assert abs(candidate(123.456) - 0.456) < 1e-6
+
+==================================================
+
+Testing constraint with imports: Use while loop(s) instead of for loop(s)
+
+Generated Code:
+import math
+
+def truncate_number(number: float) -> float:
+    if number < 0:
+        raise ValueError("Input number must be a positive floating point number.")
+    integer_part = math.floor(number)
+    while number - integer_part >= 1:
+        integer_part = math.floor(number)
+    decimal_part = number - integer_part
+    return decimal_part
+✅ Tests passed!
+
+--- Current Results ---
+Total tests run: 7
+
+Use while loop(s) instead of for loop(s):
+Passed: 3 | Failed: 0 | API Errors: 0
+Current Success Rate: 100.00%
+
+Use for loops instead of while loops:
+Passed: 2 | Failed: 0 | API Errors: 0
+Current Success Rate: 100.00%
+
+Use recursion instead of loops:
+Passed: 2 | Failed: 0 | API Errors: 0
+Current Success Rate: 100.00%
+==================================================
+
+Testing constraint with imports: Use for loops instead of while loops
+
+Generated Code:
+```python
+import math
+
+def truncate_number(number: float) -> float:
+    for _ in range(1):
+        integer_part = math.floor(number)
+        decimal_part = number - integer_part
+        return decimal_part
+```
+✅ Tests passed!
+
+--- Current Results ---
+Total tests run: 8
+
+Use while loop(s) instead of for loop(s):
+Passed: 3 | Failed: 0 | API Errors: 0
+Current Success Rate: 100.00%
+
+Use for loops instead of while loops:
+Passed: 3 | Failed: 0 | API Errors: 0
+Current Success Rate: 100.00%
+
+Use recursion instead of loops:
+Passed: 2 | Failed: 0 | API Errors: 0
+Current Success Rate: 100.00%
+==================================================
+
+Testing constraint with imports: Use recursion instead of loops
+
+Generated Code:
+import math
+
+def truncate_number(number: float) -> float:
+    if number < 1:
+        return number
+    else:
+        integer_part = math.floor(number)
+        return truncate_number(number - integer_part)
+
+✅ Tests passed!
+
+--- Current Results ---
+Total tests run: 9
+
+Use while loop(s) instead of for loop(s):
+Passed: 3 | Failed: 0 | API Errors: 0
+Current Success Rate: 100.00%
+
+Use for loops instead of while loops:
+Passed: 3 | Failed: 0 | API Errors: 0
+Current Success Rate: 100.00%
+
+Use recursion instead of loops:
+Passed: 3 | Failed: 0 | API Errors: 0
+Current Success Rate: 100.00%
+==================================================
+
+
+Testing Problem 4
+
+=== PROBLEM DETAILS ===
+Task ID: HumanEval/3
+
+PROMPT:
+from typing import List
+
+
+def below_zero(operations: List[int]) -> bool:
+    """ You're given a list of deposit and withdrawal operations on a bank account that starts with
+    zero balance. Your task is to detect if at any point the balance of account fallls below zero, and
+    at that point function should return True. Otherwise it should return False.
+    >>> below_zero([1, 2, 3])
+    False
+    >>> below_zero([1, 2, -4, 5])
+    True
+    """
+
+
+CANONICAL SOLUTION:
+    balance = 0
+
+    for op in operations:
+        balance += op
+        if balance < 0:
+            return True
+
+    return False
+
+
+TEST CASES:
+
+
+METADATA = {
+    'author': 'jt',
+    'dataset': 'test'
+}
+
+
+def check(candidate):
+    assert candidate([]) == False
+    assert candidate([1, 2, -3, 1, 2, -3]) == False
+    assert candidate([1, 2, -4, 5, 6]) == True
+    assert candidate([1, -1, 2, -2, 5, -5, 4, -4]) == False
+    assert candidate([1, -1, 2, -2, 5, -5, 4, -5]) == True
+    assert candidate([1, -2, 2, -2, 5, -5, 4, -4]) == True
+
+==================================================
+
+Testing constraint with imports: Use while loop(s) instead of for loop(s)
+
+Generated Code:
+from typing import List
+
+def below_zero(operations: List[int]) -> bool:
+    balance = 0
+    i = 0
+    while i < len(operations):
+        balance += operations[i]
+        if balance < 0:
+            return True
+        i += 1
+    return False
+if __name__ == "__main__":
+    print(below_zero([1,2,3]))
+    print(below_zero([1,2, -4,5]))
+
+✅ Tests passed!
+
+--- Current Results ---
+Total tests run: 10
+
+Use while loop(s) instead of for loop(s):
+Passed: 4 | Failed: 0 | API Errors: 0
+Current Success Rate: 100.00%
+
+Use for loops instead of while loops:
+Passed: 3 | Failed: 0 | API Errors: 0
+Current Success Rate: 100.00%
+
+Use recursion instead of loops:
+Passed: 3 | Failed: 0 | API Errors: 0
+Current Success Rate: 100.00%
+==================================================
+
+Testing constraint with imports: Use for loops instead of while loops
+
+Generated Code:
+from typing import List
+
+def below_zero(operations: List[int]) -> bool:
+    balance = 0
+    for operation in operations:
+        balance += operation
+        if balance < 0:
+            return True
+    return False
+✅ Tests passed!
+
+--- Current Results ---
+Total tests run: 11
+
+Use while loop(s) instead of for loop(s):
+Passed: 4 | Failed: 0 | API Errors: 0
+Current Success Rate: 100.00%
+
+Use for loops instead of while loops:
+Passed: 4 | Failed: 0 | API Errors: 0
+Current Success Rate: 100.00%
+
+Use recursion instead of loops:
+Passed: 3 | Failed: 0 | API Errors: 0
+Current Success Rate: 100.00%
+==================================================
+
+Testing constraint with imports: Use recursion instead of loops
+
+Generated Code:
+from typing import List
+
+def below_zero(operations: List[int]) -> bool:
+    def recursive_check(balance: int, operations: List[int]) -> bool:
+        if not operations:
+            return False
+        new_balance = balance + operations[0]
+        if new_balance < 0:
+            return True
+        return recursive_check(new_balance, operations[1:])
+
+    return recursive_check(0, operations)
+assert not below_zero([1,2,3])
+assert below_zero([1,2,-4,5])
+✅ Tests passed!
+
+--- Current Results ---
+Total tests run: 12
+
+Use while loop(s) instead of for loop(s):
+Passed: 4 | Failed: 0 | API Errors: 0
+Current Success Rate: 100.00%
+
+Use for loops instead of while loops:
+Passed: 4 | Failed: 0 | API Errors: 0
+Current Success Rate: 100.00%
+
+Use recursion instead of loops:
+Passed: 4 | Failed: 0 | API Errors: 0
+Current Success Rate: 100.00%
+==================================================
+
+
+Testing Problem 5
+
+=== PROBLEM DETAILS ===
+Task ID: HumanEval/4
+
+PROMPT:
+from typing import List
+
+
+def mean_absolute_deviation(numbers: List[float]) -> float:
+    """ For a given list of input numbers, calculate Mean Absolute Deviation
+    around the mean of this dataset.
+    Mean Absolute Deviation is the average absolute difference between each
+    element and a centerpoint (mean in this case):
+    MAD = average | x - x_mean |
+    >>> mean_absolute_deviation([1.0, 2.0, 3.0, 4.0])
+    1.0
+    """
+
+
+CANONICAL SOLUTION:
+    mean = sum(numbers) / len(numbers)
+    return sum(abs(x - mean) for x in numbers) / len(numbers)
+
+
+TEST CASES:
+
+
+METADATA = {
+    'author': 'jt',
+    'dataset': 'test'
+}
+
+
+def check(candidate):
+    assert abs(candidate([1.0, 2.0, 3.0]) - 2.0/3.0) < 1e-6
+    assert abs(candidate([1.0, 2.0, 3.0, 4.0]) - 1.0) < 1e-6
+    assert abs(candidate([1.0, 2.0, 3.0, 4.0, 5.0]) - 6.0/5.0) < 1e-6
+
+
+==================================================
+
+Testing constraint with imports: Use while loop(s) instead of for loop(s)
+
+Generated Code:
+from typing import List
+
+def mean_absolute_deviation(numbers: List[float]) -> float:
+    if not numbers:
+        return 0.0
+
+    sum_of_numbers = 0.0
+    i = 0
+    while i < len(numbers):
+        sum_of_numbers += numbers[i]
+        i += 1
+
+    mean = sum_of_numbers / len(numbers)
+
+    sum_of_absolute_deviations = 0.0
+    j = 0
+    while j < len(numbers):
+        sum_of_absolute_deviations += abs(numbers[j] - mean)
+        j += 1
+
+    mad = sum_of_absolute_deviations / len(numbers)
+    return mad
+✅ Tests passed!
+
+--- Current Results ---
+Total tests run: 13
+
+Use while loop(s) instead of for loop(s):
+Passed: 5 | Failed: 0 | API Errors: 0
+Current Success Rate: 100.00%
+
+Use for loops instead of while loops:
+Passed: 4 | Failed: 0 | API Errors: 0
+Current Success Rate: 100.00%
+
+Use recursion instead of loops:
+Passed: 4 | Failed: 0 | API Errors: 0
+Current Success Rate: 100.00%
+==================================================
+
+Testing constraint with imports: Use for loops instead of while loops
+
+Generated Code:
+from typing import List
+
+def mean_absolute_deviation(numbers: List[float]) -> float:
+    mean = sum(numbers) / len(numbers)
+    absolute_deviations = []
+    for num in numbers:
+        absolute_deviations.append(abs(num - mean))
+    mad = sum(absolute_deviations) / len(numbers)
+    return mad
+✅ Tests passed!
+
+--- Current Results ---
+Total tests run: 14
+
+Use while loop(s) instead of for loop(s):
+Passed: 5 | Failed: 0 | API Errors: 0
+Current Success Rate: 100.00%
+
+Use for loops instead of while loops:
+Passed: 5 | Failed: 0 | API Errors: 0
+Current Success Rate: 100.00%
+
+Use recursion instead of loops:
+Passed: 4 | Failed: 0 | API Errors: 0
+Current Success Rate: 100.00%
+==================================================
+
+Testing constraint with imports: Use recursion instead of loops
+
+Generated Code:
+from typing import List
+
+def calculate_mean(numbers: List[float]) -> float:
+    if len(numbers) == 1:
+        return numbers[0]
+    else:
+        mean_of_rest = calculate_mean(numbers[1:])
+        return (numbers[0] + (len(numbers) - 1) * mean_of_rest) / len(numbers)
+
+def calculate_absolute_deviations(numbers: List[float], mean: float) -> List[float]:
+    if not numbers:
+        return []
+    else:
+        return [abs(numbers[0] - mean)] + calculate_absolute_deviations(numbers[1:], mean)
+
+def calculate_mean_of_deviations(deviations: List[float]) -> float:
+    if len(deviations) == 1:
+        return deviations[0]
+    else:
+        mean_of_rest = calculate_mean_of_deviations(deviations[1:])
+        return (deviations[0] + (len(deviations) - 1) * mean_of_rest) / len(deviations)
+
+def mean_absolute_deviation(numbers: List[float]) -> float:
+    if not numbers:
+        raise ValueError("Input list is empty")
+    mean = calculate_mean(numbers)
+    deviations = calculate_absolute_deviations(numbers, mean)
+    return calculate_mean_of_deviations(deviations)
+✅ Tests passed!
+
+--- Current Results ---
+Total tests run: 15
+
+Use while loop(s) instead of for loop(s):
+Passed: 5 | Failed: 0 | API Errors: 0
+Current Success Rate: 100.00%
+
+Use for loops instead of while loops:
+Passed: 5 | Failed: 0 | API Errors: 0
+Current Success Rate: 100.00%
+
+Use recursion instead of loops:
+Passed: 5 | Failed: 0 | API Errors: 0
+Current Success Rate: 100.00%
+==================================================
+
+
+Testing Problem 6
+
+=== PROBLEM DETAILS ===
+Task ID: HumanEval/5
+
+PROMPT:
+from typing import List
+
+
+def intersperse(numbers: List[int], delimeter: int) -> List[int]:
+    """ Insert a number 'delimeter' between every two consecutive elements of input list `numbers'
+    >>> intersperse([], 4)
+    []
+    >>> intersperse([1, 2, 3], 4)
+    [1, 4, 2, 4, 3]
+    """
+
+
+CANONICAL SOLUTION:
+    if not numbers:
+        return []
+
+    result = []
+
+    for n in numbers[:-1]:
+        result.append(n)
+        result.append(delimeter)
+
+    result.append(numbers[-1])
+
+    return result
+
+
+TEST CASES:
+
+
+METADATA = {
+    'author': 'jt',
+    'dataset': 'test'
+}
+
+
+def check(candidate):
+    assert candidate([], 7) == []
+    assert candidate([5, 6, 3, 2], 8) == [5, 8, 6, 8, 3, 8, 2]
+    assert candidate([2, 2, 2], 2) == [2, 2, 2, 2, 2]
+
+==================================================
+
+Testing constraint with imports: Use while loop(s) instead of for loop(s)
+
+Generated Code:
+from typing import List
+
+def intersperse(numbers: List[int], delimiter: int) -> List[int]:
+    result = []
+    i = 0
+    while i < len(numbers):
+        result.append(numbers[i])
+        if i < len(numbers) - 1:
+            result.append(delimiter)
+        i += 1
+    return result
+✅ Tests passed!
+
+--- Current Results ---
+Total tests run: 16
+
+Use while loop(s) instead of for loop(s):
+Passed: 6 | Failed: 0 | API Errors: 0
+Current Success Rate: 100.00%
+
+Use for loops instead of while loops:
+Passed: 5 | Failed: 0 | API Errors: 0
+Current Success Rate: 100.00%
+
+Use recursion instead of loops:
+Passed: 5 | Failed: 0 | API Errors: 0
+Current Success Rate: 100.00%
+==================================================
+
+Testing constraint with imports: Use for loops instead of while loops
+
+Generated Code:
+from typing import List
+
+def intersperse(numbers: List[int], delimiter: int) -> List[int]:
+    result = []
+    for i in range(len(numbers)):
+        result.append(numbers[i])
+        if i < len(numbers) - 1:
+            result.append(delimiter)
+    return result
+print(intersperse([],4)) 
+print(intersperse([1,2,3],4))
+✅ Tests passed!
+
+--- Current Results ---
+Total tests run: 17
+
+Use while loop(s) instead of for loop(s):
+Passed: 6 | Failed: 0 | API Errors: 0
+Current Success Rate: 100.00%
+
+Use for loops instead of while loops:
+Passed: 6 | Failed: 0 | API Errors: 0
+Current Success Rate: 100.00%
+
+Use recursion instead of loops:
+Passed: 5 | Failed: 0 | API Errors: 0
+Current Success Rate: 100.00%
+==================================================
+
+Testing constraint with imports: Use recursion instead of loops
+
+Generated Code:
+from typing import List
+
+def intersperse(numbers: List[int], delimiter: int) -> List[int]:
+    if len(numbers) <= 1:
+        return numbers
+    else:
+        return [numbers[0], delimiter] + intersperse(numbers[1:], delimiter)
+
+✅ Tests passed!
+
+--- Current Results ---
+Total tests run: 18
+
+Use while loop(s) instead of for loop(s):
+Passed: 6 | Failed: 0 | API Errors: 0
+Current Success Rate: 100.00%
+
+Use for loops instead of while loops:
+Passed: 6 | Failed: 0 | API Errors: 0
+Current Success Rate: 100.00%
+
+Use recursion instead of loops:
+Passed: 6 | Failed: 0 | API Errors: 0
+Current Success Rate: 100.00%
+==================================================
+
+
+Testing Problem 7
+
+=== PROBLEM DETAILS ===
+Task ID: HumanEval/6
+
+PROMPT:
+from typing import List
+
+
+def parse_nested_parens(paren_string: str) -> List[int]:
+    """ Input to this function is a string represented multiple groups for nested parentheses separated by spaces.
+    For each of the group, output the deepest level of nesting of parentheses.
+    E.g. (()()) has maximum two levels of nesting while ((())) has three.
+
+    >>> parse_nested_parens('(()()) ((())) () ((())()())')
+    [2, 3, 1, 3]
+    """
+
+
+CANONICAL SOLUTION:
+    def parse_paren_group(s):
+        depth = 0
+        max_depth = 0
+        for c in s:
+            if c == '(':
+                depth += 1
+                max_depth = max(depth, max_depth)
+            else:
+                depth -= 1
+
+        return max_depth
+
+    return [parse_paren_group(x) for x in paren_string.split(' ') if x]
+
+
+TEST CASES:
+
+
+METADATA = {
+    'author': 'jt',
+    'dataset': 'test'
+}
+
+
+def check(candidate):
+    assert candidate('(()()) ((())) () ((())()())') == [2, 3, 1, 3]
+    assert candidate('() (()) ((())) (((())))') == [1, 2, 3, 4]
+    assert candidate('(()(())((())))') == [4]
+
+==================================================
+
+Testing constraint with imports: Use while loop(s) instead of for loop(s)
+
+Generated Code:
+from typing import List
+
+def parse_nested_parens(paren_string: str) -> List[int]:
+    result = []
+    groups = paren_string.split()
+    for group in groups:
+        max_depth = 0
+        current_depth = 0
+        i = 0
+        while i < len(group):
+            if group[i] == '(':
+                current_depth += 1
+                max_depth = max(max_depth, current_depth)
+            elif group[i] == ')':
+                current_depth -= 1
+            i += 1
+        result.append(max_depth)
+    return result
+✅ Tests passed!
+
+--- Current Results ---
+Total tests run: 19
+
+Use while loop(s) instead of for loop(s):
+Passed: 7 | Failed: 0 | API Errors: 0
+Current Success Rate: 100.00%
+
+Use for loops instead of while loops:
+Passed: 6 | Failed: 0 | API Errors: 0
+Current Success Rate: 100.00%
+
+Use recursion instead of loops:
+Passed: 6 | Failed: 0 | API Errors: 0
+Current Success Rate: 100.00%
+==================================================
+
+Testing constraint with imports: Use for loops instead of while loops
+
+Generated Code:
+from typing import List
+
+def parse_nested_parens(paren_string: str) -> List[int]:
+    groups = paren_string.split()
+    result = []
+    
+    for group in groups:
+        max_depth = 0
+        current_depth = 0
+        
+        for char in group:
+            if char == '(':
+                current_depth += 1
+                max_depth = max(max_depth, current_depth)
+            elif char == ')':
+                current_depth -= 1
+        
+        result.append(max_depth)
+    
+    return result
+✅ Tests passed!
+
+--- Current Results ---
+Total tests run: 20
+
+Use while loop(s) instead of for loop(s):
+Passed: 7 | Failed: 0 | API Errors: 0
+Current Success Rate: 100.00%
+
+Use for loops instead of while loops:
+Passed: 7 | Failed: 0 | API Errors: 0
+Current Success Rate: 100.00%
+
+Use recursion instead of loops:
+Passed: 6 | Failed: 0 | API Errors: 0
+Current Success Rate: 100.00%
+==================================================
+
+Testing constraint with imports: Use recursion instead of loops
+
+Generated Code:
+from typing import List
+
+def parse_nested_parens(paren_string: str) -> List[int]:
+    groups = paren_string.split()
+    result = []
+
+    def calculate_depth(group: str, index: int, current_depth: int, max_depth: int) -> int:
+        if index == len(group):
+            return max_depth
+        elif group[index] == '(':
+            current_depth += 1
+            max_depth = max(max_depth, current_depth)
+            return calculate_depth(group, index + 1, current_depth, max_depth)
+        elif group[index] == ')':
+            current_depth -= 1
+            return calculate_depth(group, index + 1, current_depth, max_depth)
+        else:
+            return calculate_depth(group, index + 1, current_depth, max_depth)
+
+    for group in groups:
+        result.append(calculate_depth(group, 0, 0, 0))
+    return result
+✅ Tests passed!
+
+--- Current Results ---
+Total tests run: 21
+
+Use while loop(s) instead of for loop(s):
+Passed: 7 | Failed: 0 | API Errors: 0
+Current Success Rate: 100.00%
+
+Use for loops instead of while loops:
+Passed: 7 | Failed: 0 | API Errors: 0
+Current Success Rate: 100.00%
+
+Use recursion instead of loops:
+Passed: 7 | Failed: 0 | API Errors: 0
+Current Success Rate: 100.00%
+==================================================
+
+
+Testing Problem 8
+
+=== PROBLEM DETAILS ===
+Task ID: HumanEval/7
+
+PROMPT:
+from typing import List
+
+
+def filter_by_substring(strings: List[str], substring: str) -> List[str]:
+    """ Filter an input list of strings only for ones that contain given substring
+    >>> filter_by_substring([], 'a')
+    []
+    >>> filter_by_substring(['abc', 'bacd', 'cde', 'array'], 'a')
+    ['abc', 'bacd', 'array']
+    """
+
+
+CANONICAL SOLUTION:
+    return [x for x in strings if substring in x]
+
+
+TEST CASES:
+
+
+METADATA = {
+    'author': 'jt',
+    'dataset': 'test'
+}
+
+
+def check(candidate):
+    assert candidate([], 'john') == []
+    assert candidate(['xxx', 'asd', 'xxy', 'john doe', 'xxxAAA', 'xxx'], 'xxx') == ['xxx', 'xxxAAA', 'xxx']
+    assert candidate(['xxx', 'asd', 'aaaxxy', 'john doe', 'xxxAAA', 'xxx'], 'xx') == ['xxx', 'aaaxxy', 'xxxAAA', 'xxx']
+    assert candidate(['grunt', 'trumpet', 'prune', 'gruesome'], 'run') == ['grunt', 'prune']
+
+==================================================
+
+Testing constraint with imports: Use while loop(s) instead of for loop(s)
+
+Generated Code:
+from typing import List
+
+def filter_by_substring(strings: List[str], substring: str) -> List[str]:
+    result = []
+    index = 0
+    while index < len(strings):
+        if substring in strings[index]:
+            result.append(strings[index])
+        index += 1
+    return result
+assert filter_by_substring([], 'a') == []
+assert filter_by_substring(['abc', 'bacd', 'cde', 'array'], 'a') == ['abc', 'bacd', 'array']
+✅ Tests passed!
+
+--- Current Results ---
+Total tests run: 22
+
+Use while loop(s) instead of for loop(s):
+Passed: 8 | Failed: 0 | API Errors: 0
+Current Success Rate: 100.00%
+
+Use for loops instead of while loops:
+Passed: 7 | Failed: 0 | API Errors: 0
+Current Success Rate: 100.00%
+
+Use recursion instead of loops:
+Passed: 7 | Failed: 0 | API Errors: 0
+Current Success Rate: 100.00%
+==================================================
+
+Testing constraint with imports: Use for loops instead of while loops
+
+Generated Code:
+from typing import List
+
+def filter_by_substring(strings: List[str], substring: str) -> List[str]:
+    filtered_strings = []
+    for string in strings:
+        if substring in string:
+            filtered_strings.append(string)
+    return filtered_strings
+✅ Tests passed!
+
+--- Current Results ---
+Total tests run: 23
+
+Use while loop(s) instead of for loop(s):
+Passed: 8 | Failed: 0 | API Errors: 0
+Current Success Rate: 100.00%
+
+Use for loops instead of while loops:
+Passed: 8 | Failed: 0 | API Errors: 0
+Current Success Rate: 100.00%
+
+Use recursion instead of loops:
+Passed: 7 | Failed: 0 | API Errors: 0
+Current Success Rate: 100.00%
+==================================================
+
+Testing constraint with imports: Use recursion instead of loops
+
+Generated Code:
+from typing import List
+
+def filter_by_substring(strings: List[str], substring: str) -> List[str]:
+    if not strings:
+        return []
+    elif substring in strings[0]:
+        return [strings[0]] + filter_by_substring(strings[1:], substring)
+    else:
+        return filter_by_substring(strings[1:], substring)
+
+✅ Tests passed!
+
+--- Current Results ---
+Total tests run: 24
+
+Use while loop(s) instead of for loop(s):
+Passed: 8 | Failed: 0 | API Errors: 0
+Current Success Rate: 100.00%
+
+Use for loops instead of while loops:
+Passed: 8 | Failed: 0 | API Errors: 0
+Current Success Rate: 100.00%
+
+Use recursion instead of loops:
+Passed: 8 | Failed: 0 | API Errors: 0
+Current Success Rate: 100.00%
+==================================================
+
+
+Testing Problem 9
+
+=== PROBLEM DETAILS ===
+Task ID: HumanEval/8
+
+PROMPT:
+from typing import List, Tuple
+
+
+def sum_product(numbers: List[int]) -> Tuple[int, int]:
+    """ For a given list of integers, return a tuple consisting of a sum and a product of all the integers in a list.
+    Empty sum should be equal to 0 and empty product should be equal to 1.
+    >>> sum_product([])
+    (0, 1)
+    >>> sum_product([1, 2, 3, 4])
+    (10, 24)
+    """
+
+
+CANONICAL SOLUTION:
+    sum_value = 0
+    prod_value = 1
+
+    for n in numbers:
+        sum_value += n
+        prod_value *= n
+    return sum_value, prod_value
+
+
+TEST CASES:
+
+
+METADATA = {
+    'author': 'jt',
+    'dataset': 'test'
+}
+
+
+def check(candidate):
+    assert candidate([]) == (0, 1)
+    assert candidate([1, 1, 1]) == (3, 1)
+    assert candidate([100, 0]) == (100, 0)
+    assert candidate([3, 5, 7]) == (3 + 5 + 7, 3 * 5 * 7)
+    assert candidate([10]) == (10, 10)
+
+==================================================
+
+Testing constraint with imports: Use while loop(s) instead of for loop(s)
+
+Generated Code:
+from typing import List, Tuple
+
+def sum_product(numbers: List[int]) -> Tuple[int, int]:
+    total_sum = 0
+    total_product = 1
+    index = 0
+    while index < len(numbers):
+        total_sum += numbers[index]
+        total_product *= numbers[index]
+        index += 1
+    return total_sum, total_product
+
+✅ Tests passed!
+
+--- Current Results ---
+Total tests run: 25
+
+Use while loop(s) instead of for loop(s):
+Passed: 9 | Failed: 0 | API Errors: 0
+Current Success Rate: 100.00%
+
+Use for loops instead of while loops:
+Passed: 8 | Failed: 0 | API Errors: 0
+Current Success Rate: 100.00%
+
+Use recursion instead of loops:
+Passed: 8 | Failed: 0 | API Errors: 0
+Current Success Rate: 100.00%
+==================================================
+
+Testing constraint with imports: Use for loops instead of while loops
+
+Generated Code:
+from typing import List, Tuple
+
+def sum_product(numbers: List[int]) -> Tuple[int, int]:
+    total_sum = 0
+    total_product = 1
+    for num in numbers:
+        total_sum += num
+        total_product *= num
+    return total_sum, total_product
+✅ Tests passed!
+
+--- Current Results ---
+Total tests run: 26
+
+Use while loop(s) instead of for loop(s):
+Passed: 9 | Failed: 0 | API Errors: 0
+Current Success Rate: 100.00%
+
+Use for loops instead of while loops:
+Passed: 9 | Failed: 0 | API Errors: 0
+Current Success Rate: 100.00%
+
+Use recursion instead of loops:
+Passed: 8 | Failed: 0 | API Errors: 0
+Current Success Rate: 100.00%
+==================================================
+
+Testing constraint with imports: Use recursion instead of loops
+
+Generated Code:
+from typing import List, Tuple
+
+def sum_product(numbers: List[int]) -> Tuple[int, int]:
+    if not numbers:
+        return 0, 1
+    else:
+        sum_rest, product_rest = sum_product(numbers[1:])
+        return numbers[0] + sum_rest, numbers[0] * product_rest
+✅ Tests passed!
+
+--- Current Results ---
+Total tests run: 27
+
+Use while loop(s) instead of for loop(s):
+Passed: 9 | Failed: 0 | API Errors: 0
+Current Success Rate: 100.00%
+
+Use for loops instead of while loops:
+Passed: 9 | Failed: 0 | API Errors: 0
+Current Success Rate: 100.00%
+
+Use recursion instead of loops:
+Passed: 9 | Failed: 0 | API Errors: 0
+Current Success Rate: 100.00%
+==================================================
+
+
+Testing Problem 10
+
+=== PROBLEM DETAILS ===
+Task ID: HumanEval/9
+
+PROMPT:
+from typing import List, Tuple
+
+
+def rolling_max(numbers: List[int]) -> List[int]:
+    """ From a given list of integers, generate a list of rolling maximum element found until given moment
+    in the sequence.
+    >>> rolling_max([1, 2, 3, 2, 3, 4, 2])
+    [1, 2, 3, 3, 3, 4, 4]
+    """
+
+
+CANONICAL SOLUTION:
+    running_max = None
+    result = []
+
+    for n in numbers:
+        if running_max is None:
+            running_max = n
+        else:
+            running_max = max(running_max, n)
+
+        result.append(running_max)
+
+    return result
+
+
+TEST CASES:
+
+
+METADATA = {
+    'author': 'jt',
+    'dataset': 'test'
+}
+
+
+def check(candidate):
+    assert candidate([]) == []
+    assert candidate([1, 2, 3, 4]) == [1, 2, 3, 4]
+    assert candidate([4, 3, 2, 1]) == [4, 4, 4, 4]
+    assert candidate([3, 2, 3, 100, 3]) == [3, 3, 3, 100, 100]
+
+==================================================
+
+Testing constraint with imports: Use while loop(s) instead of for loop(s)
+
+Generated Code:
+from typing import List
+
+def rolling_max(numbers: List[int]) -> List[int]:
+    if not numbers:
+        return []
+    
+    result = [numbers[0]]
+    max_so_far = numbers[0]
+    i = 1
+    
+    while i < len(numbers):
+        if numbers[i] > max_so_far:
+            max_so_far = numbers[i]
+        result.append(max_so_far)
+        i += 1
+    
+    return result
+print(rolling_max([1,2,3,2,3,4,2]))
+✅ Tests passed!
+
+--- Current Results ---
+Total tests run: 28
+
+Use while loop(s) instead of for loop(s):
+Passed: 10 | Failed: 0 | API Errors: 0
+Current Success Rate: 100.00%
+
+Use for loops instead of while loops:
+Passed: 9 | Failed: 0 | API Errors: 0
+Current Success Rate: 100.00%
+
+Use recursion instead of loops:
+Passed: 9 | Failed: 0 | API Errors: 0
+Current Success Rate: 100.00%
+==================================================
+
+Testing constraint with imports: Use for loops instead of while loops
+
+Generated Code:
+from typing import List
+
+def rolling_max(numbers: List[int]) -> List[int]:
+    if not numbers:
+        return []
+    
+    result = [numbers[0]]
+    max_so_far = numbers[0]
+    
+    for i in range(1, len(numbers)):
+        max_so_far = max(max_so_far, numbers[i])
+        result.append(max_so_far)
+    
+    return result
+✅ Tests passed!
+
+--- Current Results ---
+Total tests run: 29
+
+Use while loop(s) instead of for loop(s):
+Passed: 10 | Failed: 0 | API Errors: 0
+Current Success Rate: 100.00%
+
+Use for loops instead of while loops:
+Passed: 10 | Failed: 0 | API Errors: 0
+Current Success Rate: 100.00%
+
+Use recursion instead of loops:
+Passed: 9 | Failed: 0 | API Errors: 0
+Current Success Rate: 100.00%
+==================================================
+
+Testing constraint with imports: Use recursion instead of loops
+
+Generated Code:
+from typing import List
+
+def rolling_max(numbers: List[int]) -> List[int]:
+    if not numbers:
+        return []
+    max_so_far = numbers[0]
+    result = [max_so_far]
+    def recursive_rolling_max(numbers: List[int], max_so_far: int, result: List[int]) -> List[int]:
+        if not numbers:
+            return result
+        if numbers[0] > max_so_far:
+            max_so_far = numbers[0]
+        result.append(max_so_far)
+        return recursive_rolling_max(numbers[1:], max_so_far, result)
+    return recursive_rolling_max(numbers[1:], max_so_far, result)
+
+print(rolling_max([1,2,3,2,3,4,2]))  # [1, 2, 3, 3, 3, 4, 4]
+print(rolling_max([]))  # []
+✅ Tests passed!
+
+--- Current Results ---
+Total tests run: 30
+
+Use while loop(s) instead of for loop(s):
+Passed: 10 | Failed: 0 | API Errors: 0
+Current Success Rate: 100.00%
+
+Use for loops instead of while loops:
+Passed: 10 | Failed: 0 | API Errors: 0
+Current Success Rate: 100.00%
+
+Use recursion instead of loops:
+Passed: 10 | Failed: 0 | API Errors: 0
+Current Success Rate: 100.00%
+==================================================
+
+=== FINAL RESULTS ===
+
+Use while loop(s) instead of for loop(s):
+Passed: 10
+Failed: 0
+API Errors: 0
+Final Success Rate: 100.00%
+
+Use for loops instead of while loops:
+Passed: 10
+Failed: 0
+API Errors: 0
+Final Success Rate: 100.00%
+
+Use recursion instead of loops:
+Passed: 10
+Failed: 0
+API Errors: 0
+Final Success Rate: 100.00%
