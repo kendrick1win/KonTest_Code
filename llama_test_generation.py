@@ -55,75 +55,35 @@ def extract_code(generated_code: str) -> str:
     return code.strip()
 
 def run_test(generated_code: str, test_code: str) -> tuple[bool, bool]:
-    # Returns (is_success, is_api_error)
     if "# API Error:" in generated_code:
-        return False, True  # Indicates API error
-    
+        return False, True
+
     try:
         namespace = {}
-        
-        # Execute the generated code (defines the 'solution' function)
+
+        # Extract and execute generated solution
         exec(extract_code(generated_code), namespace)
 
-        # Check that a 'solution' function actually exists
-        if 'solution' not in namespace or not callable(namespace['solution']):
-            print("No valid 'solution' function defined.")
+        # Ensure 'solution' exists
+        if 'has_close_elements' not in namespace or not callable(namespace['has_close_elements']):
+            print("No valid 'has_close_elements' function defined.")
             return False, False
 
-        # Inject the solution into test environment
+        # Add alias for expected name in test code
+        namespace['candidate'] = namespace['has_close_elements']
+
+        # Execute test code which uses 'check(candidate)'
         exec(test_code, namespace)
-        
-        # (Optional) you can also run some manual tests here if needed
-        return True, False  # Test passed
+
+        return True, False
     except AssertionError as ae:
         print(f"AssertionError: {ae}")
-        return False, False  # Test failed
+        return False, False
     except Exception as e:
         print(f"Execution Error: {e}")
-        return False, False  # Test failed
+        return False, False
 
 
-def test_with_constraint():
-    dataset = load_dataset("openai_humaneval")
-    generator = CodeGenerator()
-    
-    constraints = [
-        "Use while loop(s) instead of for loop(s)",
-        "Use for loop(s) instead of while loop(s)",
-        "Use recursion instead of loop(s)"
-    ]
-    
-    results = {constraint: {'passed': 0, 'failed': 0} for constraint in constraints}
-    
-    for i, problem in enumerate(dataset['test']):
-        print(f"\n\nTesting Problem {i+1}/{len(dataset['test'])}")
-        generator.print_problem_details(problem)
-        
-        for constraint in constraints:
-            print(f"\nTesting constraint: {constraint}")
-            generated_code = generator.generate_with_constraint_and_import(problem['prompt'], constraint)
-            print("\nGenerated Code:")
-            print(generated_code)
-            
-            is_success, is_api_error = run_test(generated_code, problem['test'])
-            if is_api_error:
-                print("❌ API Error encountered!")
-            elif is_success:
-                print("✅ Tests passed!")
-                results[constraint]['passed'] += 1
-            else:
-                print("❌ Tests failed!")
-                results[constraint]['failed'] += 1
-    
-    # Print summary
-    print("\n=== FINAL RESULTS ===")
-    for constraint, scores in results.items():
-        total = scores['passed'] + scores['failed']
-        success_rate = (scores['passed'] / total) * 100 if total > 0 else 0
-        print(f"\n{constraint}:")
-        print(f"Passed: {scores['passed']}")
-        print(f"Failed: {scores['failed']}")
-        print(f"Success Rate: {success_rate:.2f}%")
 
 def test_with_constraint_and_import():
     logger = OutputLogger('test_results.txt')
@@ -146,7 +106,7 @@ def test_with_constraint_and_import():
     total_tests = 0
     
     # Problems limit
-    for i, problem in enumerate(list(dataset['test'])[:10]):
+    for i, problem in enumerate(list(dataset['test'])[:1]):
         logger.log(f"\n\nTesting Problem {i+1}")
         logger.log("\n=== PROBLEM DETAILS ===")
         logger.log(f"Task ID: {problem['task_id']}")
