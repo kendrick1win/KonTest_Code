@@ -49,40 +49,16 @@ class CodeGenerator:
             print(error_msg)
             return f"# {error_msg}\n# Returning empty function as fallback\ndef solution():\n    pass"
 
+
 def extract_code(generated_code: str) -> str:
-    code = re.sub(r'```python\n', '', generated_code)
-    code = re.sub(r'```', '', code)
+    """
+    Cleans the generated code by stripping triple backticks and extra markdown.
+    Safely returns raw executable Python code.
+    """
+    # Remove all ``` blocks (with or without language hints)
+    code = re.sub(r"```(?:python)?\s*", "", generated_code, flags=re.IGNORECASE)
+    code = re.sub(r"```", "", code)
     return code.strip()
-
-def run_test(generated_code: str, test_code: str) -> tuple[bool, bool]:
-    if "# API Error:" in generated_code:
-        return False, True
-
-    try:
-        namespace = {}
-
-        # Extract and execute generated solution
-        exec(extract_code(generated_code), namespace)
-
-        # Ensure 'solution' exists
-        if 'has_close_elements' not in namespace or not callable(namespace['has_close_elements']):
-            print("No valid 'has_close_elements' function defined.")
-            return False, False
-
-        # Add alias for expected name in test code
-        namespace['candidate'] = namespace['has_close_elements']
-
-        # Execute test code which uses 'check(candidate)'
-        exec(test_code, namespace)
-
-        return True, False
-    except AssertionError as ae:
-        print(f"AssertionError: {ae}")
-        return False, False
-    except Exception as e:
-        print(f"Execution Error: {e}")
-        return False, False
-
 
 
 def test_with_constraint_and_import():
@@ -96,17 +72,18 @@ def test_with_constraint_and_import():
         "Use recursion instead of loops"
     ]
     
-    # Add failed_problems tracking to results dictionary
-    results = {constraint: {
-        'passed': 0, 
-        'failed': 0, 
-        'api_errors': 0,
-        'failed_problems': []  # Track failed problem IDs
-    } for constraint in constraints}
+    # Results tracking
+    results = {
+        constraint: {
+            'passed': 0,
+            'failed': 0,
+            'failed_problems': []
+        } for constraint in constraints
+    }
+    
     total_tests = 0
     
-    # Problems limit
-    for i, problem in enumerate(list(dataset['test'])[:1]):
+    for i, problem in enumerate(list(dataset['test'])):  # Change [:1] to [:N] for more
         logger.log(f"\n\nTesting Problem {i+1}")
         logger.log("\n=== PROBLEM DETAILS ===")
         logger.log(f"Task ID: {problem['task_id']}")
@@ -119,38 +96,35 @@ def test_with_constraint_and_import():
             total_tests += 1
             logger.log(f"\nTesting constraint with imports: {constraint}")
             generated_code = generator.generate_with_constraint_and_import(problem['prompt'], constraint)
+            extracted_code = extract_code(generated_code)
             logger.log("\nGenerated Code:")
-            logger.log(generated_code)
+            logger.log(extracted_code)
             
-            is_success, is_api_error = run_test(generated_code, problem['test'])
-            if is_api_error:
-                logger.log("⚠️ API Error encountered!")
-                results[constraint]['api_errors'] += 1
-                results[constraint]['failed_problems'].append(f"Problem {i+1} (Task ID: {problem['task_id']}) - API Error")
-            elif is_success:
+            is_success = run_humaneval_test(problem, extracted_code, logger)
+
+            if is_success:
                 logger.log("✅ Tests passed!")
                 results[constraint]['passed'] += 1
             else:
                 logger.log("❌ Tests failed!")
                 results[constraint]['failed'] += 1
                 results[constraint]['failed_problems'].append(f"Problem {i+1} (Task ID: {problem['task_id']})")
-            
-            # Display running totals after each test
+
+            # Live result log
             logger.log("\n--- Current Results ---")
             logger.log(f"Total tests run: {total_tests}")
             for c, scores in results.items():
                 total = scores['passed'] + scores['failed']
                 rate = (scores['passed'] / total) * 100 if total > 0 else 0
                 logger.log(f"\n{c}:")
-                logger.log(f"Passed: {scores['passed']} | Failed: {scores['failed']} | API Errors: {scores['api_errors']}")
+                logger.log(f"Passed: {scores['passed']} | Failed: {scores['failed']}")
                 logger.log(f"Current Success Rate: {rate:.2f}%")
                 if scores['failed_problems']:
                     logger.log("Failed Problems:")
                     for prob in scores['failed_problems']:
                         logger.log(f"- {prob}")
             logger.log("=" * 50)
-
-    # Print final summary
+    # Final Summary
     logger.log("\n=== FINAL RESULTS ===")
     for constraint, scores in results.items():
         total = scores['passed'] + scores['failed']
@@ -158,14 +132,46 @@ def test_with_constraint_and_import():
         logger.log(f"\n{constraint}:")
         logger.log(f"Passed: {scores['passed']}")
         logger.log(f"Failed: {scores['failed']}")
-        logger.log(f"API Errors: {scores['api_errors']}")
         logger.log(f"Final Success Rate: {success_rate:.2f}%")
         if scores['failed_problems']:
-            logger.log("\nFailed Problems:")
+            logger.log("Failed Problems:")
             for prob in scores['failed_problems']:
                 logger.log(f"- {prob}")
     
     logger.close()
+
+
+def run_humaneval_test(problem, generated_code: str, logger: OutputLogger) -> bool:
+    namespace = {}
+    try:
+        exec(generated_code, namespace)
+
+        # Automatically extract the function name
+        match = next((line for line in generated_code.splitlines() if line.strip().startswith("def ")), None)
+        if not match:
+            raise Exception("No function definition found.")
+
+        func_name = match.split("def ")[1].split("(")[0].strip()
+        if func_name not in namespace:
+            raise Exception(f"Function '{func_name}' not found.")
+
+        # Alias for HumanEval check()
+        namespace["candidate"] = namespace[func_name]
+
+        # Run official test code from HumanEval
+        exec(problem["test"], namespace)
+
+        return True  # All tests passed
+
+    except AssertionError as ae:
+        logger.log(f"❌ Test failed for Task ID: {problem['task_id']}")
+        logger.log(f"AssertionError: {ae}")
+        return False
+    except Exception as e:
+        logger.log(f"❌ Execution error for Task ID: {problem['task_id']}")
+        logger.log(f"Exception: {e}")
+        return False
+    
 
 if __name__ == "__main__":
 

@@ -1,0 +1,969 @@
+
+
+Testing Problem 1
+
+=== PROBLEM DETAILS ===
+Task ID: HumanEval/50
+
+PROMPT:
+
+
+def encode_shift(s: str):
+    """
+    returns encoded string by shifting every character by 5 in the alphabet.
+    """
+    return "".join([chr(((ord(ch) + 5 - ord("a")) % 26) + ord("a")) for ch in s])
+
+
+def decode_shift(s: str):
+    """
+    takes as input string encoded with encode_shift function. Returns decoded string.
+    """
+
+
+CANONICAL SOLUTION:
+    return "".join([chr(((ord(ch) - 5 - ord("a")) % 26) + ord("a")) for ch in s])
+
+
+TEST CASES:
+
+
+METADATA = {}
+
+
+def check(candidate):
+    from random import randint, choice
+    import copy
+    import string
+
+    letters = string.ascii_lowercase
+    for _ in range(100):
+        str = ''.join(choice(letters) for i in range(randint(10, 20)))
+        encoded_str = encode_shift(str)
+        assert candidate(copy.deepcopy(encoded_str)) == str
+
+
+==================================================
+
+Testing constraint with imports: Use while loop(s) instead of for loop(s)
+
+Generated Code:
+import string
+
+def encode_shift(s: str):
+    alphabet = string.ascii_lowercase
+    result = ""
+    i = 0
+    while i < len(s):
+        ch = s[i]
+        if ch.isalpha():
+            shift = 5
+            if ch.islower():
+                index = alphabet.index(ch)
+                new_index = (index + shift) % 26
+                result += alphabet[new_index]
+            else:
+                index = alphabet.index(ch.lower())
+                new_index = (index + shift) % 26
+                result += alphabet[new_index].upper()
+        else:
+            result += ch
+        i += 1
+    return result
+
+def decode_shift(s: str):
+    alphabet = string.ascii_lowercase
+    result = ""
+    i = 0
+    while i < len(s):
+        ch = s[i]
+        if ch.isalpha():
+            shift = 5
+            if ch.islower():
+                index = alphabet.index(ch)
+                new_index = (index - shift) % 26
+                result += alphabet[new_index]
+            else:
+                index = alphabet.index(ch.lower())
+                new_index = (index - shift) % 26
+                result += alphabet[new_index].upper()
+        else:
+            result += ch
+        i += 1
+    return result
+✅ Tests passed!
+
+--- Current Results ---
+Total tests run: 1
+
+Use while loop(s) instead of for loop(s):
+Passed: 1 | Failed: 0
+Current Success Rate: 100.00%
+
+Use for loops instead of while loops:
+Passed: 0 | Failed: 0
+Current Success Rate: 0.00%
+
+Use recursion instead of loops:
+Passed: 0 | Failed: 0
+Current Success Rate: 0.00%
+==================================================
+
+Testing constraint with imports: Use for loops instead of while loops
+
+Generated Code:
+```python
+import string
+
+def encode_shift(s: str):
+    """
+    returns encoded string by shifting every character by 5 in the alphabet.
+    """
+    alphabet = string.ascii_lowercase
+    encoded = ""
+    for ch in s:
+        if ch.isalpha():
+            shift_index = (alphabet.index(ch.lower()) + 5) % 26
+            if ch.isupper():
+                encoded += alphabet[shift_index].upper()
+            else:
+                encoded += alphabet[shift_index]
+        else:
+            encoded += ch
+    return encoded
+
+
+def decode_shift(s: str):
+    """
+    takes as input string encoded with encode_shift function. Returns decoded string.
+    """
+    alphabet = string.ascii_lowercase
+    decoded = ""
+    for ch in s:
+        if ch.isalpha():
+            shift_index = (alphabet.index(ch.lower()) - 5) % 26
+            if ch.isupper():
+                decoded += alphabet[shift_index].upper()
+            else:
+                decoded += alphabet[shift_index]
+        else:
+            decoded += ch
+    return decoded
+```
+❌ Execution error for Task ID: HumanEval/50
+Exception: invalid syntax (<string>, line 1)
+❌ Tests failed!
+
+--- Current Results ---
+Total tests run: 2
+
+Use while loop(s) instead of for loop(s):
+Passed: 1 | Failed: 0
+Current Success Rate: 100.00%
+
+Use for loops instead of while loops:
+Passed: 0 | Failed: 1
+Current Success Rate: 0.00%
+Failed Problems:
+- Problem 1 (Task ID: HumanEval/50)
+
+Use recursion instead of loops:
+Passed: 0 | Failed: 0
+Current Success Rate: 0.00%
+==================================================
+
+Testing constraint with imports: Use recursion instead of loops
+
+Generated Code:
+```python
+import string
+
+def encode_shift(s: str):
+    if not s:
+        return s
+    else:
+        ch = s[0]
+        if ch.isalpha():
+            ascii_offset = ord('a') if ch.islower() else ord('A')
+            encoded_ch = chr(((ord(ch) - ascii_offset + 5) % 26) + ascii_offset)
+        else:
+            encoded_ch = ch
+        return encoded_ch + encode_shift(s[1:])
+
+def decode_shift(s: str):
+    if not s:
+        return s
+    else:
+        ch = s[0]
+        if ch.isalpha():
+            ascii_offset = ord('a') if ch.islower() else ord('A')
+            decoded_ch = chr(((ord(ch) - ascii_offset - 5) % 26) + ascii_offset)
+        else:
+            decoded_ch = ch
+        return decoded_ch + decode_shift(s[1:])
+```
+❌ Execution error for Task ID: HumanEval/50
+Exception: invalid syntax (<string>, line 1)
+❌ Tests failed!
+
+--- Current Results ---
+Total tests run: 3
+
+Use while loop(s) instead of for loop(s):
+Passed: 1 | Failed: 0
+Current Success Rate: 100.00%
+
+Use for loops instead of while loops:
+Passed: 0 | Failed: 1
+Current Success Rate: 0.00%
+Failed Problems:
+- Problem 1 (Task ID: HumanEval/50)
+
+Use recursion instead of loops:
+Passed: 0 | Failed: 1
+Current Success Rate: 0.00%
+Failed Problems:
+- Problem 1 (Task ID: HumanEval/50)
+==================================================
+
+
+Testing Problem 2
+
+=== PROBLEM DETAILS ===
+Task ID: HumanEval/51
+
+PROMPT:
+
+
+def remove_vowels(text):
+    """
+    remove_vowels is a function that takes string and returns string without vowels.
+    >>> remove_vowels('')
+    ''
+    >>> remove_vowels("abcdef\nghijklm")
+    'bcdf\nghjklm'
+    >>> remove_vowels('abcdef')
+    'bcdf'
+    >>> remove_vowels('aaaaa')
+    ''
+    >>> remove_vowels('aaBAA')
+    'B'
+    >>> remove_vowels('zbcd')
+    'zbcd'
+    """
+
+
+CANONICAL SOLUTION:
+    return "".join([s for s in text if s.lower() not in ["a", "e", "i", "o", "u"]])
+
+
+TEST CASES:
+
+
+METADATA = {}
+
+
+def check(candidate):
+    assert candidate('') == ''
+    assert candidate("abcdef\nghijklm") == 'bcdf\nghjklm'
+    assert candidate('fedcba') == 'fdcb'
+    assert candidate('eeeee') == ''
+    assert candidate('acBAA') == 'cB'
+    assert candidate('EcBOO') == 'cB'
+    assert candidate('ybcd') == 'ybcd'
+
+
+==================================================
+
+Testing constraint with imports: Use while loop(s) instead of for loop(s)
+
+Generated Code:
+```python
+import re
+
+def remove_vowels(text):
+    vowels = 'aeiouAEIOU'
+    i = 0
+    new_text = ''
+    while i < len(text):
+        if text[i] not in vowels:
+            new_text += text[i]
+        i += 1
+    return new_text
+```
+❌ Execution error for Task ID: HumanEval/51
+Exception: invalid syntax (<string>, line 1)
+❌ Tests failed!
+
+--- Current Results ---
+Total tests run: 4
+
+Use while loop(s) instead of for loop(s):
+Passed: 1 | Failed: 1
+Current Success Rate: 50.00%
+Failed Problems:
+- Problem 2 (Task ID: HumanEval/51)
+
+Use for loops instead of while loops:
+Passed: 0 | Failed: 1
+Current Success Rate: 0.00%
+Failed Problems:
+- Problem 1 (Task ID: HumanEval/50)
+
+Use recursion instead of loops:
+Passed: 0 | Failed: 1
+Current Success Rate: 0.00%
+Failed Problems:
+- Problem 1 (Task ID: HumanEval/50)
+==================================================
+
+Testing constraint with imports: Use for loops instead of while loops
+
+Generated Code:
+```python
+import re
+
+def remove_vowels(text):
+    vowels = 'aeiouAEIOU'
+    new_text = ''
+    for char in text:
+        if char not in vowels:
+            new_text += char
+    return new_text
+```
+❌ Execution error for Task ID: HumanEval/51
+Exception: invalid syntax (<string>, line 1)
+❌ Tests failed!
+
+--- Current Results ---
+Total tests run: 5
+
+Use while loop(s) instead of for loop(s):
+Passed: 1 | Failed: 1
+Current Success Rate: 50.00%
+Failed Problems:
+- Problem 2 (Task ID: HumanEval/51)
+
+Use for loops instead of while loops:
+Passed: 0 | Failed: 2
+Current Success Rate: 0.00%
+Failed Problems:
+- Problem 1 (Task ID: HumanEval/50)
+- Problem 2 (Task ID: HumanEval/51)
+
+Use recursion instead of loops:
+Passed: 0 | Failed: 1
+Current Success Rate: 0.00%
+Failed Problems:
+- Problem 1 (Task ID: HumanEval/50)
+==================================================
+
+Testing constraint with imports: Use recursion instead of loops
+
+Generated Code:
+```python
+import re
+
+def remove_vowels(text):
+    vowels = 'aeiouAEIOU'
+    if not text:
+        return text
+    elif text[0] in vowels:
+        return remove_vowels(text[1:])
+    else:
+        return text[0] + remove_vowels(text[1:])
+
+# Test cases
+print(remove_vowels(''))
+print(remove_vowels("abcdef\nghijklm"))
+print(remove_vowels('abcdef'))
+print(remove_vowels('aaaaa'))
+print(remove_vowels('aaBAA'))
+print(remove_vowels('zbcd'))
+```
+❌ Execution error for Task ID: HumanEval/51
+Exception: invalid syntax (<string>, line 1)
+❌ Tests failed!
+
+--- Current Results ---
+Total tests run: 6
+
+Use while loop(s) instead of for loop(s):
+Passed: 1 | Failed: 1
+Current Success Rate: 50.00%
+Failed Problems:
+- Problem 2 (Task ID: HumanEval/51)
+
+Use for loops instead of while loops:
+Passed: 0 | Failed: 2
+Current Success Rate: 0.00%
+Failed Problems:
+- Problem 1 (Task ID: HumanEval/50)
+- Problem 2 (Task ID: HumanEval/51)
+
+Use recursion instead of loops:
+Passed: 0 | Failed: 2
+Current Success Rate: 0.00%
+Failed Problems:
+- Problem 1 (Task ID: HumanEval/50)
+- Problem 2 (Task ID: HumanEval/51)
+==================================================
+
+
+Testing Problem 3
+
+=== PROBLEM DETAILS ===
+Task ID: HumanEval/52
+
+PROMPT:
+
+
+def below_threshold(l: list, t: int):
+    """Return True if all numbers in the list l are below threshold t.
+    >>> below_threshold([1, 2, 4, 10], 100)
+    True
+    >>> below_threshold([1, 20, 4, 10], 5)
+    False
+    """
+
+
+CANONICAL SOLUTION:
+    for e in l:
+        if e >= t:
+            return False
+    return True
+
+
+TEST CASES:
+
+
+METADATA = {}
+
+
+def check(candidate):
+    assert candidate([1, 2, 4, 10], 100)
+    assert not candidate([1, 20, 4, 10], 5)
+    assert candidate([1, 20, 4, 10], 21)
+    assert candidate([1, 20, 4, 10], 22)
+    assert candidate([1, 8, 4, 10], 11)
+    assert not candidate([1, 8, 4, 10], 10)
+
+
+==================================================
+
+Testing constraint with imports: Use while loop(s) instead of for loop(s)
+
+Generated Code:
+import typing as t
+
+def below_threshold(l: t.List[int], t_int: int) -> bool:
+    i = 0
+    while i < len(l):
+        if l[i] >= t_int:
+            return False
+        i += 1
+    return True
+✅ Tests passed!
+
+--- Current Results ---
+Total tests run: 7
+
+Use while loop(s) instead of for loop(s):
+Passed: 2 | Failed: 1
+Current Success Rate: 66.67%
+Failed Problems:
+- Problem 2 (Task ID: HumanEval/51)
+
+Use for loops instead of while loops:
+Passed: 0 | Failed: 2
+Current Success Rate: 0.00%
+Failed Problems:
+- Problem 1 (Task ID: HumanEval/50)
+- Problem 2 (Task ID: HumanEval/51)
+
+Use recursion instead of loops:
+Passed: 0 | Failed: 2
+Current Success Rate: 0.00%
+Failed Problems:
+- Problem 1 (Task ID: HumanEval/50)
+- Problem 2 (Task ID: HumanEval/51)
+==================================================
+
+Testing constraint with imports: Use for loops instead of while loops
+
+Generated Code:
+```python
+def below_threshold(l: list, t: int):
+    for num in l:
+        if num >= t:
+            return False
+    return True
+```
+❌ Execution error for Task ID: HumanEval/52
+Exception: invalid syntax (<string>, line 1)
+❌ Tests failed!
+
+--- Current Results ---
+Total tests run: 8
+
+Use while loop(s) instead of for loop(s):
+Passed: 2 | Failed: 1
+Current Success Rate: 66.67%
+Failed Problems:
+- Problem 2 (Task ID: HumanEval/51)
+
+Use for loops instead of while loops:
+Passed: 0 | Failed: 3
+Current Success Rate: 0.00%
+Failed Problems:
+- Problem 1 (Task ID: HumanEval/50)
+- Problem 2 (Task ID: HumanEval/51)
+- Problem 3 (Task ID: HumanEval/52)
+
+Use recursion instead of loops:
+Passed: 0 | Failed: 2
+Current Success Rate: 0.00%
+Failed Problems:
+- Problem 1 (Task ID: HumanEval/50)
+- Problem 2 (Task ID: HumanEval/51)
+==================================================
+
+Testing constraint with imports: Use recursion instead of loops
+
+Generated Code:
+from typing import List
+
+def below_threshold(lst: List[int], t: int) -> bool:
+    if not lst:
+        return True
+    elif lst[0] >= t:
+        return False
+    else:
+        return below_threshold(lst[1:], t)
+✅ Tests passed!
+
+--- Current Results ---
+Total tests run: 9
+
+Use while loop(s) instead of for loop(s):
+Passed: 2 | Failed: 1
+Current Success Rate: 66.67%
+Failed Problems:
+- Problem 2 (Task ID: HumanEval/51)
+
+Use for loops instead of while loops:
+Passed: 0 | Failed: 3
+Current Success Rate: 0.00%
+Failed Problems:
+- Problem 1 (Task ID: HumanEval/50)
+- Problem 2 (Task ID: HumanEval/51)
+- Problem 3 (Task ID: HumanEval/52)
+
+Use recursion instead of loops:
+Passed: 1 | Failed: 2
+Current Success Rate: 33.33%
+Failed Problems:
+- Problem 1 (Task ID: HumanEval/50)
+- Problem 2 (Task ID: HumanEval/51)
+==================================================
+
+
+Testing Problem 4
+
+=== PROBLEM DETAILS ===
+Task ID: HumanEval/53
+
+PROMPT:
+
+
+def add(x: int, y: int):
+    """Add two numbers x and y
+    >>> add(2, 3)
+    5
+    >>> add(5, 7)
+    12
+    """
+
+
+CANONICAL SOLUTION:
+    return x + y
+
+
+TEST CASES:
+
+
+METADATA = {}
+
+
+def check(candidate):
+    import random
+
+    assert candidate(0, 1) == 1
+    assert candidate(1, 0) == 1
+    assert candidate(2, 3) == 5
+    assert candidate(5, 7) == 12
+    assert candidate(7, 5) == 12
+
+    for i in range(100):
+        x, y = random.randint(0, 1000), random.randint(0, 1000)
+        assert candidate(x, y) == x + y
+
+
+==================================================
+
+Testing constraint with imports: Use while loop(s) instead of for loop(s)
+
+Generated Code:
+```python
+def add(x: int, y: int):
+    result = x
+    i = 0
+    while i < y:
+        result += 1
+        i += 1
+    return result
+```
+❌ Execution error for Task ID: HumanEval/53
+Exception: invalid syntax (<string>, line 1)
+❌ Tests failed!
+
+--- Current Results ---
+Total tests run: 10
+
+Use while loop(s) instead of for loop(s):
+Passed: 2 | Failed: 2
+Current Success Rate: 50.00%
+Failed Problems:
+- Problem 2 (Task ID: HumanEval/51)
+- Problem 4 (Task ID: HumanEval/53)
+
+Use for loops instead of while loops:
+Passed: 0 | Failed: 3
+Current Success Rate: 0.00%
+Failed Problems:
+- Problem 1 (Task ID: HumanEval/50)
+- Problem 2 (Task ID: HumanEval/51)
+- Problem 3 (Task ID: HumanEval/52)
+
+Use recursion instead of loops:
+Passed: 1 | Failed: 2
+Current Success Rate: 33.33%
+Failed Problems:
+- Problem 1 (Task ID: HumanEval/50)
+- Problem 2 (Task ID: HumanEval/51)
+==================================================
+
+Testing constraint with imports: Use for loops instead of while loops
+
+Generated Code:
+```python
+def add(x: int, y: int):
+    result = 0
+    for _ in range(1):
+        result = x + y
+    return result
+```
+❌ Execution error for Task ID: HumanEval/53
+Exception: invalid syntax (<string>, line 1)
+❌ Tests failed!
+
+--- Current Results ---
+Total tests run: 11
+
+Use while loop(s) instead of for loop(s):
+Passed: 2 | Failed: 2
+Current Success Rate: 50.00%
+Failed Problems:
+- Problem 2 (Task ID: HumanEval/51)
+- Problem 4 (Task ID: HumanEval/53)
+
+Use for loops instead of while loops:
+Passed: 0 | Failed: 4
+Current Success Rate: 0.00%
+Failed Problems:
+- Problem 1 (Task ID: HumanEval/50)
+- Problem 2 (Task ID: HumanEval/51)
+- Problem 3 (Task ID: HumanEval/52)
+- Problem 4 (Task ID: HumanEval/53)
+
+Use recursion instead of loops:
+Passed: 1 | Failed: 2
+Current Success Rate: 33.33%
+Failed Problems:
+- Problem 1 (Task ID: HumanEval/50)
+- Problem 2 (Task ID: HumanEval/51)
+==================================================
+
+Testing constraint with imports: Use recursion instead of loops
+
+Generated Code:
+```python
+def add(x: int, y: int):
+    """
+    Add two numbers x and y
+    >>> add(2,3)
+    5
+    >>> add(5,7)
+    12
+    """
+    if y == 0:
+        return x
+    elif y > 0:
+        return add(x + 1, y - 1)
+    else:
+        return add(x - 1, y + 1)
+```
+❌ Execution error for Task ID: HumanEval/53
+Exception: invalid syntax (<string>, line 1)
+❌ Tests failed!
+
+--- Current Results ---
+Total tests run: 12
+
+Use while loop(s) instead of for loop(s):
+Passed: 2 | Failed: 2
+Current Success Rate: 50.00%
+Failed Problems:
+- Problem 2 (Task ID: HumanEval/51)
+- Problem 4 (Task ID: HumanEval/53)
+
+Use for loops instead of while loops:
+Passed: 0 | Failed: 4
+Current Success Rate: 0.00%
+Failed Problems:
+- Problem 1 (Task ID: HumanEval/50)
+- Problem 2 (Task ID: HumanEval/51)
+- Problem 3 (Task ID: HumanEval/52)
+- Problem 4 (Task ID: HumanEval/53)
+
+Use recursion instead of loops:
+Passed: 1 | Failed: 3
+Current Success Rate: 25.00%
+Failed Problems:
+- Problem 1 (Task ID: HumanEval/50)
+- Problem 2 (Task ID: HumanEval/51)
+- Problem 4 (Task ID: HumanEval/53)
+==================================================
+
+
+Testing Problem 5
+
+=== PROBLEM DETAILS ===
+Task ID: HumanEval/54
+
+PROMPT:
+
+
+def same_chars(s0: str, s1: str):
+    """
+    Check if two words have the same characters.
+    >>> same_chars('eabcdzzzz', 'dddzzzzzzzddeddabc')
+    True
+    >>> same_chars('abcd', 'dddddddabc')
+    True
+    >>> same_chars('dddddddabc', 'abcd')
+    True
+    >>> same_chars('eabcd', 'dddddddabc')
+    False
+    >>> same_chars('abcd', 'dddddddabce')
+    False
+    >>> same_chars('eabcdzzzz', 'dddzzzzzzzddddabc')
+    False
+    """
+
+
+CANONICAL SOLUTION:
+    return set(s0) == set(s1)
+
+
+TEST CASES:
+
+
+METADATA = {}
+
+
+def check(candidate):
+    assert candidate('eabcdzzzz', 'dddzzzzzzzddeddabc') == True
+    assert candidate('abcd', 'dddddddabc') == True
+    assert candidate('dddddddabc', 'abcd') == True
+    assert candidate('eabcd', 'dddddddabc') == False
+    assert candidate('abcd', 'dddddddabcf') == False
+    assert candidate('eabcdzzzz', 'dddzzzzzzzddddabc') == False
+    assert candidate('aabb', 'aaccc') == False
+
+
+==================================================
+
+Testing constraint with imports: Use while loop(s) instead of for loop(s)
+
+Generated Code:
+from collections import Counter
+
+def same_chars(s0: str, s1: str) -> bool:
+    count_s0 = Counter()
+    i = 0
+    while i < len(s0):
+        count_s0[s0[i]] += 1
+        i += 1
+
+    count_s1 = Counter()
+    j = 0
+    while j < len(s1):
+        count_s1[s1[j]] += 1
+        j += 1
+
+    return count_s0 == count_s1
+✅ Tests passed!
+
+--- Current Results ---
+Total tests run: 13
+
+Use while loop(s) instead of for loop(s):
+Passed: 3 | Failed: 2
+Current Success Rate: 60.00%
+Failed Problems:
+- Problem 2 (Task ID: HumanEval/51)
+- Problem 4 (Task ID: HumanEval/53)
+
+Use for loops instead of while loops:
+Passed: 0 | Failed: 4
+Current Success Rate: 0.00%
+Failed Problems:
+- Problem 1 (Task ID: HumanEval/50)
+- Problem 2 (Task ID: HumanEval/51)
+- Problem 3 (Task ID: HumanEval/52)
+- Problem 4 (Task ID: HumanEval/53)
+
+Use recursion instead of loops:
+Passed: 1 | Failed: 3
+Current Success Rate: 25.00%
+Failed Problems:
+- Problem 1 (Task ID: HumanEval/50)
+- Problem 2 (Task ID: HumanEval/51)
+- Problem 4 (Task ID: HumanEval/53)
+==================================================
+
+Testing constraint with imports: Use for loops instead of while loops
+
+Generated Code:
+from collections import Counter
+
+def same_chars(s0: str, s1: str) -> bool:
+    count_s0 = Counter()
+    count_s1 = Counter()
+    
+    for char in s0:
+        count_s0[char] += 1
+
+    for char in s1:
+        count_s1[char] += 1
+
+    return count_s0 == count_s1
+✅ Tests passed!
+
+--- Current Results ---
+Total tests run: 14
+
+Use while loop(s) instead of for loop(s):
+Passed: 3 | Failed: 2
+Current Success Rate: 60.00%
+Failed Problems:
+- Problem 2 (Task ID: HumanEval/51)
+- Problem 4 (Task ID: HumanEval/53)
+
+Use for loops instead of while loops:
+Passed: 1 | Failed: 4
+Current Success Rate: 20.00%
+Failed Problems:
+- Problem 1 (Task ID: HumanEval/50)
+- Problem 2 (Task ID: HumanEval/51)
+- Problem 3 (Task ID: HumanEval/52)
+- Problem 4 (Task ID: HumanEval/53)
+
+Use recursion instead of loops:
+Passed: 1 | Failed: 3
+Current Success Rate: 25.00%
+Failed Problems:
+- Problem 1 (Task ID: HumanEval/50)
+- Problem 2 (Task ID: HumanEval/51)
+- Problem 4 (Task ID: HumanEval/53)
+==================================================
+
+Testing constraint with imports: Use recursion instead of loops
+
+Generated Code:
+from collections import Counter
+
+def same_chars(s0: str, s1: str) -> bool:
+    def _compare_counts(count0, count1):
+        if not count0:
+            return not count1
+        if not count1:
+            return False
+        if count0[0][0] != count1[0][0]:
+            return False
+        if count0[0][1] != count1[0][1]:
+            return False
+        return _compare_counts(count0[1:], count1[1:])
+
+    count0 = Counter(s0).most_common()
+    count1 = Counter(s1).most_common()
+    return _compare_counts(count0, count1)
+✅ Tests passed!
+
+--- Current Results ---
+Total tests run: 15
+
+Use while loop(s) instead of for loop(s):
+Passed: 3 | Failed: 2
+Current Success Rate: 60.00%
+Failed Problems:
+- Problem 2 (Task ID: HumanEval/51)
+- Problem 4 (Task ID: HumanEval/53)
+
+Use for loops instead of while loops:
+Passed: 1 | Failed: 4
+Current Success Rate: 20.00%
+Failed Problems:
+- Problem 1 (Task ID: HumanEval/50)
+- Problem 2 (Task ID: HumanEval/51)
+- Problem 3 (Task ID: HumanEval/52)
+- Problem 4 (Task ID: HumanEval/53)
+
+Use recursion instead of loops:
+Passed: 2 | Failed: 3
+Current Success Rate: 40.00%
+Failed Problems:
+- Problem 1 (Task ID: HumanEval/50)
+- Problem 2 (Task ID: HumanEval/51)
+- Problem 4 (Task ID: HumanEval/53)
+==================================================
+
+=== FINAL RESULTS ===
+
+Use while loop(s) instead of for loop(s):
+Passed: 3
+Failed: 2
+Final Success Rate: 60.00%
+Failed Problems:
+- Problem 2 (Task ID: HumanEval/51)
+- Problem 4 (Task ID: HumanEval/53)
+
+Use for loops instead of while loops:
+Passed: 1
+Failed: 4
+Final Success Rate: 20.00%
+Failed Problems:
+- Problem 1 (Task ID: HumanEval/50)
+- Problem 2 (Task ID: HumanEval/51)
+- Problem 3 (Task ID: HumanEval/52)
+- Problem 4 (Task ID: HumanEval/53)
+
+Use recursion instead of loops:
+Passed: 2
+Failed: 3
+Final Success Rate: 40.00%
+Failed Problems:
+- Problem 1 (Task ID: HumanEval/50)
+- Problem 2 (Task ID: HumanEval/51)
+- Problem 4 (Task ID: HumanEval/53)
