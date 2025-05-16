@@ -1,0 +1,483 @@
+
+
+Testing Problem 1
+
+=== PROBLEM DETAILS ===
+Task ID: HumanEval/72
+
+PROMPT:
+
+def will_it_fly(q,w):
+    '''
+    Write a function that returns True if the object q will fly, and False otherwise.
+    The object q will fly if it's balanced (it is a palindromic list) and the sum of its elements is less than or equal the maximum possible weight w.
+
+    Example:
+    will_it_fly([1, 2], 5) ➞ False 
+    # 1+2 is less than the maximum possible weight, but it's unbalanced.
+
+    will_it_fly([3, 2, 3], 1) ➞ False
+    # it's balanced, but 3+2+3 is more than the maximum possible weight.
+
+    will_it_fly([3, 2, 3], 9) ➞ True
+    # 3+2+3 is less than the maximum possible weight, and it's balanced.
+
+    will_it_fly([3], 5) ➞ True
+    # 3 is less than the maximum possible weight, and it's balanced.
+    '''
+
+
+CANONICAL SOLUTION:
+    if sum(q) > w:
+        return False
+
+    i, j = 0, len(q)-1
+    while i<j:
+        if q[i] != q[j]:
+            return False
+        i+=1
+        j-=1
+    return True
+
+
+TEST CASES:
+def check(candidate):
+
+    # Check some simple cases
+    assert candidate([3, 2, 3], 9) is True
+    assert candidate([1, 2], 5) is False
+    assert candidate([3], 5) is True
+    assert candidate([3, 2, 3], 1) is False
+
+
+    # Check some edge cases that are easy to work out by hand.
+    assert candidate([1, 2, 3], 6) is False
+    assert candidate([5], 5) is True
+
+
+==================================================
+
+Testing constraint with imports: Use while loop(s) instead of for loop(s)
+
+Generated Code:
+def will_it_fly(q, w):
+    i, j = 0, len(q) - 1
+    is_palindromic = True
+    sum_of_elements = 0
+    while i < j:
+        if q[i] != q[j]:
+            is_palindromic = False
+            break
+        i += 1
+        j -= 1
+    while i < len(q):
+        sum_of_elements += q[i]
+        i += 1
+    return is_palindromic and sum_of_elements <= w
+✅ Tests passed!
+
+--- Current Results ---
+Total tests run: 1
+
+Use while loop(s) instead of for loop(s):
+Passed: 1 | Failed: 0
+Current Success Rate: 100.00%
+
+Use for loops instead of while loops:
+Passed: 0 | Failed: 0
+Current Success Rate: 0.00%
+
+Use recursion instead of loops:
+Passed: 0 | Failed: 0
+Current Success Rate: 0.00%
+==================================================
+
+Testing constraint with imports: Use for loops instead of while loops
+
+Generated Code:
+def will_it_fly(q, w):
+    sum_of_elements = 0
+    for i in q:
+        sum_of_elements += i
+    is_palindromic = True
+    for i in range(len(q) // 2):
+        if q[i] != q[-(i+1)]:
+            is_palindromic = False
+            break
+    return is_palindromic and sum_of_elements <= w
+✅ Tests passed!
+
+--- Current Results ---
+Total tests run: 2
+
+Use while loop(s) instead of for loop(s):
+Passed: 1 | Failed: 0
+Current Success Rate: 100.00%
+
+Use for loops instead of while loops:
+Passed: 1 | Failed: 0
+Current Success Rate: 100.00%
+
+Use recursion instead of loops:
+Passed: 0 | Failed: 0
+Current Success Rate: 0.00%
+==================================================
+
+Testing constraint with imports: Use recursion instead of loops
+
+Generated Code:
+def will_it_fly(q, w):
+    def is_palindrome(lst):
+        if len(lst) <= 1:
+            return True
+        if lst[0] != lst[-1]:
+            return False
+        return is_palindrome(lst[1:-1])
+
+    def sum_list(lst):
+        if not lst:
+            return 0
+        return lst[0] + sum_list(lst[1:])
+
+    return is_palindrome(q) and sum_list(q) <= w
+✅ Tests passed!
+
+--- Current Results ---
+Total tests run: 3
+
+Use while loop(s) instead of for loop(s):
+Passed: 1 | Failed: 0
+Current Success Rate: 100.00%
+
+Use for loops instead of while loops:
+Passed: 1 | Failed: 0
+Current Success Rate: 100.00%
+
+Use recursion instead of loops:
+Passed: 1 | Failed: 0
+Current Success Rate: 100.00%
+==================================================
+
+
+Testing Problem 2
+
+=== PROBLEM DETAILS ===
+Task ID: HumanEval/73
+
+PROMPT:
+
+def smallest_change(arr):
+    """
+    Given an array arr of integers, find the minimum number of elements that
+    need to be changed to make the array palindromic. A palindromic array is an array that
+    is read the same backwards and forwards. In one change, you can change one element to any other element.
+
+    For example:
+    smallest_change([1,2,3,5,4,7,9,6]) == 4
+    smallest_change([1, 2, 3, 4, 3, 2, 2]) == 1
+    smallest_change([1, 2, 3, 2, 1]) == 0
+    """
+
+
+CANONICAL SOLUTION:
+    ans = 0
+    for i in range(len(arr) // 2):
+        if arr[i] != arr[len(arr) - i - 1]:
+            ans += 1
+    return ans
+
+
+TEST CASES:
+def check(candidate):
+
+    # Check some simple cases
+    assert candidate([1,2,3,5,4,7,9,6]) == 4
+    assert candidate([1, 2, 3, 4, 3, 2, 2]) == 1
+    assert candidate([1, 4, 2]) == 1
+    assert candidate([1, 4, 4, 2]) == 1
+
+    # Check some edge cases that are easy to work out by hand.
+    assert candidate([1, 2, 3, 2, 1]) == 0
+    assert candidate([3, 1, 1, 3]) == 0
+    assert candidate([1]) == 0
+    assert candidate([0, 1]) == 1
+
+
+==================================================
+
+Testing constraint with imports: Use while loop(s) instead of for loop(s)
+
+Generated Code:
+def smallest_change(arr):
+    left = 0
+    right = len(arr) - 1
+    changes = 0
+    while left < right:
+        if arr[left] != arr[right]:
+            changes += 1
+        left += 1
+        right -= 1
+    return changes
+✅ Tests passed!
+
+--- Current Results ---
+Total tests run: 4
+
+Use while loop(s) instead of for loop(s):
+Passed: 2 | Failed: 0
+Current Success Rate: 100.00%
+
+Use for loops instead of while loops:
+Passed: 1 | Failed: 0
+Current Success Rate: 100.00%
+
+Use recursion instead of loops:
+Passed: 1 | Failed: 0
+Current Success Rate: 100.00%
+==================================================
+
+Testing constraint with imports: Use for loops instead of while loops
+
+Generated Code:
+def smallest_change(arr):
+    n = len(arr)
+    changes = 0
+    for i in range(n // 2):
+        if arr[i] != arr[n - 1 - i]:
+            changes += 1
+    return changes
+
+✅ Tests passed!
+
+--- Current Results ---
+Total tests run: 5
+
+Use while loop(s) instead of for loop(s):
+Passed: 2 | Failed: 0
+Current Success Rate: 100.00%
+
+Use for loops instead of while loops:
+Passed: 2 | Failed: 0
+Current Success Rate: 100.00%
+
+Use recursion instead of loops:
+Passed: 1 | Failed: 0
+Current Success Rate: 100.00%
+==================================================
+
+Testing constraint with imports: Use recursion instead of loops
+
+Generated Code:
+def smallest_change(arr):
+    def helper(arr, start, end):
+        if start >= end:
+            return 0
+        if arr[start] == arr[end]:
+            return helper(arr, start + 1, end - 1)
+        else:
+            return 1 + min(helper(arr, start + 1, end - 1) + 1, 
+                            helper(arr, start + 1, end) + 1, 
+                            helper(arr, start, end - 1) + 1)
+    return helper(arr, 0, len(arr) - 1)
+
+# Test cases
+✅ Tests passed!
+
+--- Current Results ---
+Total tests run: 6
+
+Use while loop(s) instead of for loop(s):
+Passed: 2 | Failed: 0
+Current Success Rate: 100.00%
+
+Use for loops instead of while loops:
+Passed: 2 | Failed: 0
+Current Success Rate: 100.00%
+
+Use recursion instead of loops:
+Passed: 2 | Failed: 0
+Current Success Rate: 100.00%
+==================================================
+
+
+Testing Problem 3
+
+=== PROBLEM DETAILS ===
+Task ID: HumanEval/74
+
+PROMPT:
+
+def total_match(lst1, lst2):
+    '''
+    Write a function that accepts two lists of strings and returns the list that has 
+    total number of chars in the all strings of the list less than the other list.
+
+    if the two lists have the same number of chars, return the first list.
+
+    Examples
+    total_match([], []) ➞ []
+    total_match(['hi', 'admin'], ['hI', 'Hi']) ➞ ['hI', 'Hi']
+    total_match(['hi', 'admin'], ['hi', 'hi', 'admin', 'project']) ➞ ['hi', 'admin']
+    total_match(['hi', 'admin'], ['hI', 'hi', 'hi']) ➞ ['hI', 'hi', 'hi']
+    total_match(['4'], ['1', '2', '3', '4', '5']) ➞ ['4']
+    '''
+
+
+CANONICAL SOLUTION:
+    l1 = 0
+    for st in lst1:
+        l1 += len(st)
+    
+    l2 = 0
+    for st in lst2:
+        l2 += len(st)
+    
+    if l1 <= l2:
+        return lst1
+    else:
+        return lst2
+
+
+TEST CASES:
+def check(candidate):
+
+    # Check some simple cases
+    assert True, "This prints if this assert fails 1 (good for debugging!)"
+    assert candidate([], []) == []
+    assert candidate(['hi', 'admin'], ['hi', 'hi']) == ['hi', 'hi']
+    assert candidate(['hi', 'admin'], ['hi', 'hi', 'admin', 'project']) == ['hi', 'admin']
+    assert candidate(['4'], ['1', '2', '3', '4', '5']) == ['4']
+    assert candidate(['hi', 'admin'], ['hI', 'Hi']) == ['hI', 'Hi']
+    assert candidate(['hi', 'admin'], ['hI', 'hi', 'hi']) == ['hI', 'hi', 'hi']
+    assert candidate(['hi', 'admin'], ['hI', 'hi', 'hii']) == ['hi', 'admin']
+
+
+    # Check some edge cases that are easy to work out by hand.
+    assert True, "This prints if this assert fails 2 (also good for debugging!)"
+    assert candidate([], ['this']) == []
+    assert candidate(['this'], []) == []
+
+
+==================================================
+
+Testing constraint with imports: Use while loop(s) instead of for loop(s)
+
+Generated Code:
+def total_match(lst1, lst2):
+    i = 0
+    total_chars_lst1 = 0
+    total_chars_lst2 = 0
+    while i < len(lst1):
+        total_chars_lst1 += len(lst1[i])
+        i += 1
+    i = 0
+    while i < len(lst2):
+        total_chars_lst2 += len(lst2[i])
+        i += 1
+    if total_chars_lst1 <= total_chars_lst2:
+        return lst1
+    else:
+        return lst2
+✅ Tests passed!
+
+--- Current Results ---
+Total tests run: 7
+
+Use while loop(s) instead of for loop(s):
+Passed: 3 | Failed: 0
+Current Success Rate: 100.00%
+
+Use for loops instead of while loops:
+Passed: 2 | Failed: 0
+Current Success Rate: 100.00%
+
+Use recursion instead of loops:
+Passed: 2 | Failed: 0
+Current Success Rate: 100.00%
+==================================================
+
+Testing constraint with imports: Use for loops instead of while loops
+
+Generated Code:
+def total_match(lst1, lst2):
+    sum1 = 0
+    sum2 = 0
+    for string in lst1:
+        for char in string:
+            sum1 += 1
+    for string in lst2:
+        for char in string:
+            sum2 += 1
+    if sum1 <= sum2:
+        return lst1
+    else:
+        return lst2
+✅ Tests passed!
+
+--- Current Results ---
+Total tests run: 8
+
+Use while loop(s) instead of for loop(s):
+Passed: 3 | Failed: 0
+Current Success Rate: 100.00%
+
+Use for loops instead of while loops:
+Passed: 3 | Failed: 0
+Current Success Rate: 100.00%
+
+Use recursion instead of loops:
+Passed: 2 | Failed: 0
+Current Success Rate: 100.00%
+==================================================
+
+Testing constraint with imports: Use recursion instead of loops
+
+Generated Code:
+def total_match(lst1, lst2):
+    def total_chars(lst):
+        if not lst:
+            return 0
+        else:
+            return len(lst[0]) + total_chars(lst[1:])
+
+    chars_in_lst1 = total_chars(lst1)
+    chars_in_lst2 = total_chars(lst2)
+
+    if chars_in_lst1 <= chars_in_lst2:
+        return lst1
+    else:
+        return lst2
+✅ Tests passed!
+
+--- Current Results ---
+Total tests run: 9
+
+Use while loop(s) instead of for loop(s):
+Passed: 3 | Failed: 0
+Current Success Rate: 100.00%
+
+Use for loops instead of while loops:
+Passed: 3 | Failed: 0
+Current Success Rate: 100.00%
+
+Use recursion instead of loops:
+Passed: 3 | Failed: 0
+Current Success Rate: 100.00%
+==================================================
+
+=== FINAL RESULTS ===
+
+Use while loop(s) instead of for loop(s):
+Passed: 3
+Failed: 0
+Final Success Rate: 100.00%
+
+Use for loops instead of while loops:
+Passed: 3
+Failed: 0
+Final Success Rate: 100.00%
+
+Use recursion instead of loops:
+Passed: 3
+Failed: 0
+Final Success Rate: 100.00%

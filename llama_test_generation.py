@@ -52,13 +52,32 @@ class CodeGenerator:
 
 def extract_code(generated_code: str) -> str:
     """
-    Cleans the generated code by stripping triple backticks and extra markdown.
-    Safely returns raw executable Python code.
+    Cleans the generated code by:
+    - Removing markdown formatting like ```python
+    - Stripping out unsafe or noisy lines like sys.exit(), exit(), and top-level print()
+    Returns raw executable Python code.
     """
-    # Remove all ``` blocks (with or without language hints)
+    # Remove triple backticks and language hints
     code = re.sub(r"```(?:python)?\s*", "", generated_code, flags=re.IGNORECASE)
     code = re.sub(r"```", "", code)
-    return code.strip()
+
+    # Split lines and filter out dangerous or noisy lines
+    lines = code.strip().splitlines()
+    cleaned_lines = []
+
+    for line in lines:
+        stripped = line.strip()
+        # Filter out common undesired lines
+        if (
+            stripped.startswith("print(") or
+            stripped.startswith("sys.exit()") or
+            stripped.startswith("exit()") or
+            stripped == "pass"  # Optional: to remove placeholder bodies
+        ):
+            continue
+        cleaned_lines.append(line)
+
+    return "\n".join(cleaned_lines)
 
 
 def test_with_constraint_and_import():
@@ -83,7 +102,7 @@ def test_with_constraint_and_import():
     
     total_tests = 0
     
-    for i, problem in enumerate(list(dataset['test'])):  # Change [:1] to [:N] for more
+    for i, problem in enumerate(list(dataset['test'])[102:]):
         logger.log(f"\n\nTesting Problem {i+1}")
         logger.log("\n=== PROBLEM DETAILS ===")
         logger.log(f"Task ID: {problem['task_id']}")
